@@ -794,13 +794,91 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      add_contact: {
+        Args: { b: string; em: string; kind: string; n: string; ph: string }
+        Returns: string
+      }
+      add_product: {
+        Args: {
+          b: string
+          c: string
+          cost_value: number
+          min_value: number
+          n: string
+          price_value: number
+          s: string
+          stock_value: number
+        }
+        Returns: string
+      }
       business_active: { Args: { b: string }; Returns: boolean }
+      configure_bank: {
+        Args: { account: string; bank: string; holder: string }
+        Returns: undefined
+      }
       is_admin: { Args: never; Returns: boolean }
       onboard_business: {
         Args: { p_name: string; p_phone: string; p_sector: string }
         Returns: string
       }
       owns_business: { Args: { b: string }; Returns: boolean }
+      receive_debt: {
+        Args: { b: string; m: string; r: string; req: string; val: number }
+        Returns: string
+      }
+      record_expense: {
+        Args: {
+          b: string
+          cat: string
+          d: string
+          n: string
+          r: string
+          val: number
+        }
+        Returns: string
+      }
+      record_purchase: {
+        Args: {
+          b: string
+          c: number
+          p: string
+          paid_value: number
+          q: number
+          req: string
+          s: string
+        }
+        Returns: string
+      }
+      record_sale: {
+        Args: {
+          b: string
+          customer: string
+          discount_value: number
+          due: string
+          items: Json
+          method: string
+          paid_value: number
+          req: string
+        }
+        Returns: string
+      }
+      request_subscription: {
+        Args: { b: string; p: string; r: string; ref: string }
+        Returns: string
+      }
+      reverse_sale: {
+        Args: { b: string; reason: string; s: string }
+        Returns: undefined
+      }
+      review_payment: {
+        Args: {
+          approve: boolean
+          independently_verified: boolean
+          note: string
+          r: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
