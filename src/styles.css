@@ -142,3 +142,30 @@
     color: var(--color-foreground);
   }
 }
+
+:root {
+  --primary: oklch(0.62 0.205 256);
+  --primary-foreground: oklch(1 0 0);
+  --navy: oklch(0.21 0.06 262);
+  --navy-foreground: oklch(0.98 0.01 250);
+  --foreground: oklch(0.21 0.06 262);
+  --background: oklch(0.985 0.006 250);
+  --secondary: oklch(0.95 0.025 250);
+  --accent: oklch(0.94 0.04 252);
+  --accent-foreground: oklch(0.21 0.06 262);
+  --ring: oklch(0.62 0.205 256);
+  --success: oklch(0.62 0.15 155);
+  --warning: oklch(0.72 0.16 70);
+  --gradient-brand: linear-gradient(135deg, var(--navy), oklch(0.32 0.12 258) 55%, var(--primary));
+  --shadow-soft: 0 18px 40px -22px color-mix(in oklab, var(--navy) 45%, transparent);
+}
+@theme inline {
+  --color-navy: var(--navy);
+  --color-navy-foreground: var(--navy-foreground);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --font-sans: "Manrope", system-ui, sans-serif;
+  --font-display: "Sora", system-ui, sans-serif;
+}
+@utility bg-brand-gradient { background: var(--gradient-brand); }
+@utility shadow-soft { box-shadow: var(--shadow-soft); }
