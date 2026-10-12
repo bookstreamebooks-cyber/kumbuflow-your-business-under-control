@@ -17,7 +17,7 @@ export const performAction=createServerFn({method:'POST'}).middleware([requireSu
  case 'product':result=await db.rpc('add_product',{b:d.b,n:d.name,s:d.sku,c:d.category,cost_value:d.cost,price_value:d.price,stock_value:d.stock,min_value:d.min_stock});break
  case 'contact':result=await db.rpc('add_contact',{b:d.b,kind:d.type,n:d.name,ph:d.phone,em:d.email});break
  case 'expense':result=await db.rpc('record_expense',{b:d.b,cat:d.category,val:d.amount,d:d.date,n:d.notes,r:d.receipt??''});break
- case 'sale':result=await db.rpc('record_sale',{b:d.b,customer:d.customer??undefined,items:d.items,discount_value:d.discount,paid_value:d.paid,method:d.method,due:d.due,req:d.request});break
+ case 'sale':result=await db.rpc('record_sale',{b:d.b,customer:(d.customer??null) as unknown as string,items:d.items,discount_value:d.discount,paid_value:d.paid,method:d.method,due:d.due,req:d.request});break
  case 'debt':result=await db.rpc('receive_debt',{b:d.b,r:d.id,val:d.amount,m:d.method,req:d.request});break
  case 'purchase':result=await db.rpc('record_purchase',{b:d.b,s:d.supplier,p:d.product,q:d.quantity,c:d.cost,paid_value:d.paid,req:d.request});break
  case 'reverse':result=await db.rpc('reverse_sale',{b:d.b,s:d.id,reason:d.reason});break
@@ -25,7 +25,7 @@ export const performAction=createServerFn({method:'POST'}).middleware([requireSu
  case 'review':result=await db.rpc('review_payment',{r:d.id,approve:d.approve,note:d.note,independently_verified:d.verified});break
  case 'bank':result=await db.rpc('configure_bank',{bank:d.bank,holder:d.holder,account:d.iban});break
  case 'profile':result=await db.from('profiles').update({display_name:d.name}).eq('id',context.userId);break
- case 'plan':result=await db.rpc('configure_plan',{p_id:d.id,p_name:d.name,p_price:d.price,p_days:d.days,p_enabled:d.enabled});break
+ case 'plan':result=await (db.rpc as unknown as (f:string,a:object)=>ReturnType<typeof db.rpc>)('configure_plan',{p_id:d.id,p_name:d.name,p_price:d.price,p_days:d.days,p_enabled:d.enabled});break
  }
  if(result.error){ const text=result.error.code==='23505'?'Este registo já existe. Não foi duplicado.':result.error.message;throw new Error(text) }
  return {ok:true}
