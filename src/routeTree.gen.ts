@@ -13,7 +13,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as AuthenticatedClientesRouteImport } from './routes/_authenticated/clientes'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDespesasRouteImport } from './routes/_authenticated/despesas'
+import { Route as AuthenticatedProdutosRouteImport } from './routes/_authenticated/produtos'
+import { Route as AuthenticatedVendasRouteImport } from './routes/_authenticated/vendas'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,9 +38,29 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedClientesRoute = AuthenticatedClientesRouteImport.update({
+  id: '/clientes',
+  path: '/clientes',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDespesasRoute = AuthenticatedDespesasRouteImport.update({
+  id: '/despesas',
+  path: '/despesas',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedProdutosRoute = AuthenticatedProdutosRouteImport.update({
+  id: '/produtos',
+  path: '/produtos',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedVendasRoute = AuthenticatedVendasRouteImport.update({
+  id: '/vendas',
+  path: '/vendas',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 
@@ -44,13 +68,21 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/clientes': typeof AuthenticatedClientesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/despesas': typeof AuthenticatedDespesasRoute
+  '/produtos': typeof AuthenticatedProdutosRoute
+  '/vendas': typeof AuthenticatedVendasRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/clientes': typeof AuthenticatedClientesRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/despesas': typeof AuthenticatedDespesasRoute
+  '/produtos': typeof AuthenticatedProdutosRoute
+  '/vendas': typeof AuthenticatedVendasRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -58,20 +90,44 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/clientes': typeof AuthenticatedClientesRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/despesas': typeof AuthenticatedDespesasRoute
+  '/_authenticated/produtos': typeof AuthenticatedProdutosRoute
+  '/_authenticated/vendas': typeof AuthenticatedVendasRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/reset-password' | '/dashboard'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/reset-password'
+    | '/clientes'
+    | '/dashboard'
+    | '/despesas'
+    | '/produtos'
+    | '/vendas'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/reset-password' | '/dashboard'
+  to:
+    | '/'
+    | '/auth'
+    | '/reset-password'
+    | '/clientes'
+    | '/dashboard'
+    | '/despesas'
+    | '/produtos'
+    | '/vendas'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/reset-password'
+    | '/_authenticated/clientes'
     | '/_authenticated/dashboard'
+    | '/_authenticated/despesas'
+    | '/_authenticated/produtos'
+    | '/_authenticated/vendas'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -111,6 +167,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/clientes': {
+      id: '/_authenticated/clientes'
+      path: '/clientes'
+      fullPath: '/clientes'
+      preLoaderRoute: typeof AuthenticatedClientesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -118,15 +181,44 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/despesas': {
+      id: '/_authenticated/despesas'
+      path: '/despesas'
+      fullPath: '/despesas'
+      preLoaderRoute: typeof AuthenticatedDespesasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/produtos': {
+      id: '/_authenticated/produtos'
+      path: '/produtos'
+      fullPath: '/produtos'
+      preLoaderRoute: typeof AuthenticatedProdutosRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/vendas': {
+      id: '/_authenticated/vendas'
+      path: '/vendas'
+      fullPath: '/vendas'
+      preLoaderRoute: typeof AuthenticatedVendasRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedClientesRoute: typeof AuthenticatedClientesRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDespesasRoute: typeof AuthenticatedDespesasRoute
+  AuthenticatedProdutosRoute: typeof AuthenticatedProdutosRoute
+  AuthenticatedVendasRoute: typeof AuthenticatedVendasRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedClientesRoute: AuthenticatedClientesRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDespesasRoute: AuthenticatedDespesasRoute,
+  AuthenticatedProdutosRoute: AuthenticatedProdutosRoute,
+  AuthenticatedVendasRoute: AuthenticatedVendasRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
