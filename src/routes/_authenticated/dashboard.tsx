@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { queryOptions, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { AlertTriangle, ArrowUpRight, Banknote, LogOut, Package, Receipt, ShoppingCart, TrendingUp, Users, Wallet } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-const workspaceQuery = queryOptions({ queryKey: ["workspace"], queryFn: () => getWorkspace() });
+import { workspaceQuery } from "@/lib/queries";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => meta("Painel", "Resumo diário das vendas, lucro, caixa, stock e dívidas do teu negócio."),
@@ -156,17 +156,17 @@ function Overview({ data, firstName }: { data: Workspace; firstName: string }) {
       </section>
 
       <section className="grid gap-3 sm:grid-cols-4">
-        {[
-          { label: "Nova venda", icon: ShoppingCart },
-          { label: "Produtos", icon: Package },
-          { label: "Despesas", icon: Receipt },
-          { label: "Clientes", icon: Users },
-        ].map((a) => (
-          <div key={a.label} className="flex items-center gap-3 rounded-xl border border-dashed bg-card/60 p-4 text-sm text-muted-foreground">
+        {([
+          { label: "Nova venda", icon: ShoppingCart, to: "/vendas" },
+          { label: "Produtos", icon: Package, to: "/produtos" },
+          { label: "Despesas", icon: Receipt, to: "/despesas" },
+          { label: "Clientes", icon: Users, to: "/clientes" },
+        ] as const).map((a) => (
+          <Link key={a.label} to={a.to} className="flex items-center gap-3 rounded-xl border bg-card p-4 text-sm transition hover:border-primary">
             <a.icon className="size-5 text-primary" />
             <span className="font-medium text-foreground">{a.label}</span>
-            <span className="ml-auto text-xs">Em breve</span>
-          </div>
+            <ArrowUpRight className="ml-auto size-4 text-muted-foreground" />
+          </Link>
         ))}
       </section>
 
