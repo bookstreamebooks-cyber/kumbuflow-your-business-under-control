@@ -45,7 +45,7 @@ function Dashboard() {
         </div>
       </header>
       <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10">
-        {data.business ? <Overview data={data} firstName={firstName} /> : <Onboarding firstName={firstName} />}
+        {data.business ? <Overview data={data} firstName={firstName ?? ""} /> : <Onboarding firstName={firstName ?? ""} />}
       </main>
     </div>
   );
