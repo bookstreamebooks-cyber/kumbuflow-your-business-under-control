@@ -816,6 +816,16 @@ export type Database = {
         Args: { account: string; bank: string; holder: string }
         Returns: undefined
       }
+      configure_plan: {
+        Args: {
+          p_days: number
+          p_enabled: boolean
+          p_id: string
+          p_name: string
+          p_price: number
+        }
+        Returns: undefined
+      }
       is_admin: { Args: never; Returns: boolean }
       onboard_business: {
         Args: { p_name: string; p_phone: string; p_sector: string }
