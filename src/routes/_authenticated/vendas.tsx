@@ -69,6 +69,19 @@ function Sales() {
     await act({ kind: "reverse", b: b.id, id, reason }, "Venda anulada e stock reposto.");
   }
 
+  async function correct(id: string) {
+    if (!b) return;
+    const sale = data.sales.find((x) => x.id === id);
+    if (!sale || !window.confirm("Corrigir esta venda? A venda original é anulada (o stock é reposto) e os produtos voltam ao carrinho para registares de novo.")) return;
+    const ok = await act({ kind: "reverse", b: b.id, id, reason: "Correcção da venda pelo utilizador" }, "Venda anulada. Corrige e confirma de novo.");
+    if (!ok) return;
+    const next: Record<string, number> = {};
+    for (const i of data.items.filter((x) => x.sale_id === id)) next[i.product_id] = (next[i.product_id] ?? 0) + Number(i.quantity);
+    setCart(next); setCustomer(sale.customer_id ?? ""); setDiscount(Number(sale.discount) ? String(sale.discount) : "");
+    if ((methods as readonly string[]).includes(sale.payment_method)) setMethod(sale.payment_method as Method);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
   return (
     <AppShell title="Vendas">
       {!b ? <NeedsBusiness /> : (
@@ -158,7 +171,7 @@ function Sales() {
                       <p className="text-xs text-muted-foreground">{dateLabel(s.created_at)}{s.customer_id && ` · ${data.customers.find((c) => c.id === s.customer_id)?.name ?? ""}`}</p>
                     </div>
                     {s.status === "confirmed" ? (
-                      <Button size="sm" variant="ghost" disabled={busy} onClick={() => reverse(s.id)}>Anular</Button>
+                      <div className="flex gap-1"><Button size="sm" variant="outline" disabled={busy} onClick={() => correct(s.id)}>Corrigir</Button><Button size="sm" variant="ghost" disabled={busy} onClick={() => reverse(s.id)}>Anular</Button></div>
                     ) : <span className="text-xs font-semibold text-destructive">Anulada</span>}
                   </li>
                 ))}
