@@ -811,6 +811,10 @@ export type Database = {
         }
         Returns: string
       }
+      adjust_stock: {
+        Args: { b: string; new_stock: number; p: string; reason: string }
+        Returns: undefined
+      }
       business_active: { Args: { b: string }; Returns: boolean }
       configure_bank: {
         Args: { account: string; bank: string; holder: string }
@@ -872,6 +876,12 @@ export type Database = {
         }
         Returns: string
       }
+      remove_contact: {
+        Args: { b: string; c: string; kind: string }
+        Returns: undefined
+      }
+      remove_expense: { Args: { b: string; e: string }; Returns: undefined }
+      remove_product: { Args: { b: string; p: string }; Returns: string }
       request_subscription: {
         Args: { b: string; p: string; r: string; ref: string }
         Returns: string
@@ -886,6 +896,41 @@ export type Database = {
           independently_verified: boolean
           note: string
           r: string
+        }
+        Returns: undefined
+      }
+      update_contact: {
+        Args: {
+          b: string
+          c: string
+          em: string
+          kind: string
+          n: string
+          ph: string
+        }
+        Returns: undefined
+      }
+      update_expense: {
+        Args: {
+          b: string
+          cat: string
+          d: string
+          e: string
+          n: string
+          val: number
+        }
+        Returns: undefined
+      }
+      update_product: {
+        Args: {
+          b: string
+          c: string
+          cost_value: number
+          min_value: number
+          n: string
+          p: string
+          price_value: number
+          s: string
         }
         Returns: undefined
       }
