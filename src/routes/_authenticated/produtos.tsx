@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { Plus, Search } from "lucide-react";
+import { Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { workspaceQuery } from "@/lib/queries";
 import { meta, money } from "@/lib/kumbuflow";
 import { useAction } from "@/lib/use-action";
@@ -23,7 +23,9 @@ function Products() {
   const { act, busy } = useAction();
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
+  const [editId, setEditId] = useState<string | null>(null);
   const b = data.business;
+  const editing = data.products.find((p) => p.id === editId) ?? null;
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -31,32 +33,40 @@ function Products() {
     const form = e.currentTarget;
     const f = new FormData(form);
     const num = (k: string) => Number(f.get(k) || 0);
-    const ok = await act(
-      { kind: "product", b: b.id, name: String(f.get("name")).trim(), sku: String(f.get("sku") ?? ""), category: String(f.get("category") || "Geral").trim(), cost: num("cost"), price: num("price"), stock: num("stock"), min_stock: num("min") },
-      "Produto adicionado.",
-    );
-    if (ok) { form.reset(); setOpen(false); }
+    const fields = { b: b.id, name: String(f.get("name")).trim(), sku: String(f.get("sku") ?? ""), category: String(f.get("category") || "Geral").trim(), cost: num("cost"), price: num("price"), stock: num("stock"), min_stock: num("min") };
+    const ok = editing
+      ? await act({ kind: "productEdit", id: editing.id, ...fields }, "Produto actualizado.")
+      : await act({ kind: "product", ...fields }, "Produto adicionado.");
+    if (ok) { form.reset(); setOpen(false); setEditId(null); }
   }
 
-  const list = data.products.filter((p) => p.name.toLowerCase().includes(q.toLowerCase()) || p.sku.toLowerCase().includes(q.toLowerCase()));
+  async function remove(id: string, name: string) {
+    if (!b || !window.confirm(`Remover «${name}»? Se já tiver vendas, fica apenas arquivado para manter o histórico.`)) return;
+    await act({ kind: "productRemove", b: b.id, id }, "Produto removido.");
+  }
+
+  function startEdit(id: string) { setEditId(id); setOpen(true); window.scrollTo({ top: 0, behavior: "smooth" }); }
+  function close() { setOpen(false); setEditId(null); }
+
+  const list = data.products.filter((p) => p.active).filter((p) => p.name.toLowerCase().includes(q.toLowerCase()) || p.sku.toLowerCase().includes(q.toLowerCase()));
 
   return (
-    <AppShell title="Produtos" actions={b && <Button onClick={() => setOpen(!open)}><Plus /> Novo produto</Button>}>
+    <AppShell title="Produtos" actions={b && <Button onClick={() => { setEditId(null); setOpen(!open); }}><Plus /> Novo produto</Button>}>
       {!b ? <NeedsBusiness /> : (
         <div className="space-y-6">
           {open && (
-            <Panel title="Novo produto">
-              <form onSubmit={submit} className="grid gap-4 sm:grid-cols-2">
-                <Field label="Nome" name="name" required />
-                <Field label="Código (opcional)" name="sku" />
-                <Field label="Categoria" name="category" placeholder="Geral" />
-                <Field label="Preço de venda (Kz)" name="price" type="number" required />
-                <Field label="Custo (Kz)" name="cost" type="number" />
-                <Field label="Stock inicial" name="stock" type="number" />
-                <Field label="Stock mínimo" name="min" type="number" defaultValue="5" />
+            <Panel title={editing ? "Editar produto" : "Novo produto"}>
+              <form key={editing?.id ?? "new"} onSubmit={submit} className="grid gap-4 sm:grid-cols-2">
+                <Field label="Nome" name="name" required defaultValue={editing?.name} />
+                <Field label="Código (opcional)" name="sku" defaultValue={editing?.sku} />
+                <Field label="Categoria" name="category" placeholder="Geral" defaultValue={editing?.category} />
+                <Field label="Preço de venda (Kz)" name="price" type="number" required defaultValue={editing ? String(editing.price) : undefined} />
+                <Field label="Custo (Kz)" name="cost" type="number" defaultValue={editing ? String(editing.cost) : undefined} />
+                <Field label={editing ? "Stock actual" : "Stock inicial"} name="stock" type="number" defaultValue={editing ? String(editing.stock) : undefined} />
+                <Field label="Stock mínimo" name="min" type="number" defaultValue={editing ? String(editing.min_stock) : "5"} />
                 <div className="flex items-end gap-2">
                   <Button disabled={busy} className="flex-1">{busy ? "A guardar…" : "Guardar"}</Button>
-                  <Button type="button" variant="outline" onClick={() => setOpen(false)}>Cancelar</Button>
+                  <Button type="button" variant="outline" onClick={close}>Cancelar</Button>
                 </div>
               </form>
             </Panel>
@@ -76,9 +86,13 @@ function Products() {
                         <p className="truncate font-medium">{p.name}</p>
                         <p className="text-xs text-muted-foreground">{p.category}{p.sku && ` · ${p.sku}`} · custo {money(Number(p.cost))}</p>
                       </div>
-                      <div className="text-right">
-                        <p className="font-semibold">{money(Number(p.price))}</p>
-                        <p className={`text-xs ${low ? "font-semibold text-warning" : "text-muted-foreground"}`}>{Number(p.stock)} em stock</p>
+                      <div className="flex items-center gap-2">
+                        <div className="text-right">
+                          <p className="font-semibold">{money(Number(p.price))}</p>
+                          <p className={`text-xs ${low ? "font-semibold text-warning" : "text-muted-foreground"}`}>{Number(p.stock)} em stock</p>
+                        </div>
+                        <Button size="icon" variant="ghost" aria-label="Editar" onClick={() => startEdit(p.id)}><Pencil /></Button>
+                        <Button size="icon" variant="ghost" aria-label="Remover" disabled={busy} onClick={() => remove(p.id, p.name)}><Trash2 className="text-destructive" /></Button>
                       </div>
                     </li>
                   );
