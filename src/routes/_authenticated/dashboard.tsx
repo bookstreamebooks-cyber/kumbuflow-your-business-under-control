@@ -133,9 +133,9 @@ function Overview({ data, firstName }: { data: Workspace; firstName: string }) {
           <h1 className="font-display text-2xl font-bold text-navy sm:text-3xl">Olá{firstName ? `, ${firstName}` : ""} 👋</h1>
         </div>
         {sub && (
-          <span className={`inline-flex w-fit items-center rounded-full px-3 py-1 text-xs font-semibold ${daysLeft > 3 ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"}`}>
-            {daysLeft > 0 ? `${sub.is_trial ? "Ensaio grátis" : "Plano activo"} · ${daysLeft} ${daysLeft === 1 ? "dia" : "dias"} restantes` : "Subscrição expirada"}
-          </span>
+          <Link to="/assinatura" className={`inline-flex w-fit items-center rounded-full px-3 py-1 text-xs font-semibold ${daysLeft > 3 ? "bg-primary/10 text-primary" : "bg-destructive/10 text-destructive"}`}>
+            {daysLeft > 0 ? `${sub.is_trial ? "Ensaio grátis" : "Plano activo"} · ${daysLeft} ${daysLeft === 1 ? "dia" : "dias"} restantes` : "Subscrição expirada"} · Renovar
+          </Link>
         )}
       </div>
 
