@@ -22,7 +22,7 @@ export const getAdminData=createServerFn({method:'GET'}).middleware([requireSupa
 })
 export type WorkspaceData=Awaited<ReturnType<typeof getWorkspace>>
 export const performAction=createServerFn({method:'POST'}).middleware([requireSupabaseAuth]).inputValidator((data)=>actionSchema.parse(data)).handler(async({data:d,context})=>{
- const db=context.supabase;let result
+ const db=context.supabase;let result:{error:{code?:string;message:string}|null;data?:unknown}
  switch(d.kind){
  case 'onboard':result=await db.rpc('onboard_business',{p_name:d.name,p_sector:d.sector,p_phone:d.phone});break
  case 'product':result=await db.rpc('add_product',{b:d.b,n:d.name,s:d.sku,c:d.category,cost_value:d.cost,price_value:d.price,stock_value:d.stock,min_value:d.min_stock});break
