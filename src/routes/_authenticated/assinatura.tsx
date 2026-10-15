@@ -42,13 +42,13 @@ function Subscription() {
     const file = f.get("receipt");
     let receipt: string | null = null;
     if (file instanceof File && file.size > 0) {
-      if (file.size > 5 * 1024 * 1024) return toast.error("O comprovativo deve ter no máximo 5 MB.");
+      if (file.size > 5 * 1024 * 1024) { toast.error("O comprovativo deve ter no máximo 5 MB."); return; }
       setUploading(true);
       const ext = (file.name.split(".").pop() || "bin").toLowerCase().replace(/[^a-z0-9]/g, "");
       const path = `${data.userId}/${crypto.randomUUID()}.${ext}`;
       const { error } = await supabase.storage.from("receipts").upload(path, file, { contentType: file.type });
       setUploading(false);
-      if (error) return toast.error("Não foi possível enviar o comprovativo.");
+      if (error) { toast.error("Não foi possível enviar o comprovativo."); return; }
       receipt = path;
     }
     const ok = await act({ kind: "subscription", b: b.id, plan, reference: String(f.get("reference")), receipt }, "Pedido enviado. Vamos verificar a transferência.");

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { LayoutDashboard, LogOut, Package, Receipt, ShieldCheck, ShoppingCart, Users } from "lucide-react";
+import { CreditCard, LayoutDashboard, LogOut, Package, Receipt, ShieldCheck, ShoppingCart, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { workspaceQuery } from "@/lib/queries";
 import { Brand } from "./brand";
@@ -40,6 +40,9 @@ export function AppShell({ title, children, actions }: { title: string; children
               <n.icon className="size-4" /> {n.label}
             </Link>
           ))}
+          <Link to="/assinatura" className={linkCls} activeProps={{ className: activeCls }}>
+            <CreditCard className="size-4" /> Assinatura
+          </Link>
           {data.isAdmin && (
             <Link to="/admin" className={`${linkCls} mt-4`} activeProps={{ className: activeCls }}>
               <ShieldCheck className="size-4" /> Administração
@@ -54,6 +57,9 @@ export function AppShell({ title, children, actions }: { title: string; children
           <div className="lg:hidden"><Brand /></div>
           <h1 className="hidden font-display text-lg font-semibold text-navy lg:block">{title}</h1>
           <div className="flex items-center gap-1">
+            <Button asChild variant="ghost" size="icon" className="lg:hidden" aria-label="Assinatura">
+              <Link to="/assinatura"><CreditCard /></Link>
+            </Button>
             {data.isAdmin && (
               <Button asChild variant="ghost" size="icon" className="lg:hidden" aria-label="Administração">
                 <Link to="/admin"><ShieldCheck /></Link>
