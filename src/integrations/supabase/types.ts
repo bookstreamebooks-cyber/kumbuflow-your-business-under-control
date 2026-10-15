@@ -831,6 +831,7 @@ export type Database = {
         Returns: undefined
       }
       is_admin: { Args: never; Returns: boolean }
+      mark_notifications_read: { Args: { b: string }; Returns: undefined }
       onboard_business: {
         Args: { p_name: string; p_phone: string; p_sector: string }
         Returns: string
