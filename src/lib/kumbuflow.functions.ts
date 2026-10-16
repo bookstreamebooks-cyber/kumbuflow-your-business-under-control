@@ -36,8 +36,18 @@ export const performAction=createServerFn({method:'POST'}).middleware([requireSu
  case 'review':result=await db.rpc('review_payment',{r:d.id,approve:d.approve,note:d.note,independently_verified:d.verified});break
  case 'bank':result=await db.rpc('configure_bank',{bank:d.bank,holder:d.holder,account:d.iban});break
  case 'profile':result=await db.from('profiles').update({display_name:d.name}).eq('id',context.userId);break
- case 'plan':result=await db.rpc('configure_plan',{p_id:d.id,p_name:d.name,p_price:d.price,p_days:d.days,p_enabled:d.enabled});break
- }
+  case 'plan':result=await db.rpc('configure_plan',{p_id:d.id,p_name:d.name,p_price:d.price,p_days:d.days,p_enabled:d.enabled});break
+  case 'productEdit':{
+   result=await db.rpc('update_product',{b:d.b,p:d.id,n:d.name,s:d.sku,c:d.category,cost_value:d.cost,price_value:d.price,min_value:d.min_stock})
+   if(!result.error){const cur=await db.from('products').select('stock').eq('id',d.id).eq('business_id',d.b).single();if(cur.data&&Number(cur.data.stock)!==d.stock) result=await db.rpc('adjust_stock',{b:d.b,p:d.id,new_stock:d.stock,reason:'Correcção manual'})}
+   break}
+  case 'productRemove':result=await db.rpc('remove_product',{b:d.b,p:d.id});break
+  case 'contactEdit':result=await db.rpc('update_contact',{b:d.b,kind:d.type,c:d.id,n:d.name,ph:d.phone,em:d.email});break
+  case 'contactRemove':result=await db.rpc('remove_contact',{b:d.b,kind:d.type,c:d.id});break
+  case 'expenseEdit':result=await db.rpc('update_expense',{b:d.b,e:d.id,cat:d.category,val:d.amount,d:d.date,n:d.notes});break
+  case 'expenseRemove':result=await db.rpc('remove_expense',{b:d.b,e:d.id});break
+  case 'readNotifications':result=await db.rpc('mark_notifications_read',{b:d.b});break
+  }
  if(result.error){ const text=result.error.code==='23505'?'Este registo já existe. Não foi duplicado.':result.error.message;throw new Error(text) }
  return {ok:true}
 })

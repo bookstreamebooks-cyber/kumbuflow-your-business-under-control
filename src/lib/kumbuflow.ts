@@ -23,6 +23,7 @@ export const actionSchema=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('contactRemove'),b:id,id:id,type:z.enum(['customer','supplier'])}),
  z.object({kind:z.literal('expenseEdit'),b:id,id:id,category:name,amount:amount.positive(),date:z.string().regex(/^\d{4}-\d{2}-\d{2}$/),notes:z.string().max(1000)}),
  z.object({kind:z.literal('expenseRemove'),b:id,id:id}),
+ z.object({kind:z.literal('readNotifications'),b:id}),
  z.object({kind:z.literal('plan'),id:name,name:name,price:amount.positive(),days:z.number().int().min(1).max(365),enabled:z.boolean()}),
 ])
 export type Action = z.infer<typeof actionSchema>
