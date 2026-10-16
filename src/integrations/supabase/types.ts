@@ -129,6 +129,30 @@ export type Database = {
           },
         ]
       }
+      expense_categories: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: string
+          name: string
+          sort: number
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          name: string
+          sort?: number
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          name?: string
+          sort?: number
+        }
+        Relationships: []
+      }
       expenses: {
         Row: {
           amount: number
@@ -815,9 +839,14 @@ export type Database = {
         Args: { b: string; new_stock: number; p: string; reason: string }
         Returns: undefined
       }
+      admin_notify: { Args: { b: string; msg: string }; Returns: number }
       business_active: { Args: { b: string }; Returns: boolean }
       configure_bank: {
         Args: { account: string; bank: string; holder: string }
+        Returns: undefined
+      }
+      configure_category: {
+        Args: { c: string; n: string; on_off: boolean }
         Returns: undefined
       }
       configure_plan: {
