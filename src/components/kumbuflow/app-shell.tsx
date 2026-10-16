@@ -1,7 +1,9 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
+import { useAction } from "@/lib/use-action";
+import { dateLabel } from "@/lib/kumbuflow";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { CreditCard, LayoutDashboard, LogOut, Package, Receipt, ShieldCheck, ShoppingCart, Users } from "lucide-react";
+import { Bell, CreditCard, FileSpreadsheet, LayoutDashboard, LogOut, Package, Receipt, ShieldCheck, ShoppingCart, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { workspaceQuery } from "@/lib/queries";
 import { Brand } from "./brand";
@@ -43,6 +45,9 @@ export function AppShell({ title, children, actions }: { title: string; children
           <Link to="/assinatura" className={linkCls} activeProps={{ className: activeCls }}>
             <CreditCard className="size-4" /> Assinatura
           </Link>
+          <Link to="/relatorios" className={linkCls} activeProps={{ className: activeCls }}>
+            <FileSpreadsheet className="size-4" /> Relatórios
+          </Link>
           {data.isAdmin && (
             <Link to="/admin" className={`${linkCls} mt-4`} activeProps={{ className: activeCls }}>
               <ShieldCheck className="size-4" /> Administração
@@ -57,6 +62,10 @@ export function AppShell({ title, children, actions }: { title: string; children
           <div className="lg:hidden"><Brand /></div>
           <h1 className="hidden font-display text-lg font-semibold text-navy lg:block">{title}</h1>
           <div className="flex items-center gap-1">
+            <Notifications />
+            <Button asChild variant="ghost" size="icon" className="lg:hidden" aria-label="Relatórios">
+              <Link to="/relatorios"><FileSpreadsheet /></Link>
+            </Button>
             <Button asChild variant="ghost" size="icon" className="lg:hidden" aria-label="Assinatura">
               <Link to="/assinatura"><CreditCard /></Link>
             </Button>
@@ -111,3 +120,39 @@ export function Empty({ children }: { children: ReactNode }) {
 }
 
 export const selectCls = "h-10 w-full rounded-md border border-input bg-background px-3 text-sm";
+
+function Notifications() {
+  const { data } = useSuspenseQuery(workspaceQuery);
+  const { act } = useAction();
+  const [open, setOpen] = useState(false);
+  const list = data.notifications;
+  const unread = list.filter((n) => !n.read_at).length;
+  function toggle() {
+    const next = !open;
+    setOpen(next);
+    if (next && unread > 0 && data.business) void act({ kind: "readNotifications", b: data.business.id }, "Notificações lidas.");
+  }
+  return (
+    <div className="relative">
+      <Button variant="ghost" size="icon" onClick={toggle} aria-label={`Notificações${unread ? ` (${unread} por ler)` : ""}`}>
+        <Bell />
+        {unread > 0 && <span className="absolute right-1 top-1 grid size-4 place-items-center rounded-full bg-destructive text-[10px] font-bold text-destructive-foreground">{unread}</span>}
+      </Button>
+      {open && (
+        <div className="absolute right-0 top-11 z-30 w-80 max-w-[90vw] rounded-xl border bg-card p-2 shadow-soft">
+          <p className="px-2 py-1 text-sm font-semibold text-navy">Notificações</p>
+          {list.length === 0 ? <p className="px-2 py-4 text-sm text-muted-foreground">Sem notificações.</p> : (
+            <ul className="max-h-80 divide-y overflow-auto">
+              {list.map((n) => (
+                <li key={n.id} className="px-2 py-2 text-sm">
+                  <p className={n.read_at ? "text-muted-foreground" : "font-medium"}>{n.message}</p>
+                  <p className="text-xs text-muted-foreground">{dateLabel(n.created_at)}</p>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
